@@ -1,6 +1,6 @@
 import java.util.*;
 
-public class KruskalAlgorithm {
+class KruskalAlgorithm {
 
     // 1. Edge class to represent a weighted edge in the graph
     static class Edge implements Comparable<Edge> {
