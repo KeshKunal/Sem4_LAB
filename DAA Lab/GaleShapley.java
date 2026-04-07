@@ -26,7 +26,7 @@ class Matching {
             nextProposal[i] = 0;    // Each man starts by proposing to the woman at index 0 of his preference list
         }
 
-        stableMatch(); // Kick off the main algorithm
+        stableMatch();
     }
 
     // Gale-Shapley Algorithm

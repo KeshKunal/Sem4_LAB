@@ -1,7 +1,6 @@
 import java.util.*;
 class QuickSort {
 
-    // Method to perform Quick Sort based on the logic in your notes
     static void quickSort(int[] a, int left, int right) {
         if (left < right) {
             int i = left;
