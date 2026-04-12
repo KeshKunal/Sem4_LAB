@@ -23,35 +23,35 @@ public class KruskalMatrix {
 
         // --- INPUT SECTION ---
         System.out.print("Enter number of vertices: ");
-        int V = sc.nextInt();
+        int n = sc.nextInt();
 
-        int[][] graph = new int[V][V];
+        int[][] graph = new int[n][n];
         System.out.println("Enter adjacency matrix (0 for self, 999 for no edge):");
-        for (int i = 0; i < V; i++) {
-            for (int j = 0; j < V; j++) {
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
                 graph[i][j] = sc.nextInt();
             }
         }
 
         // --- INITIALIZATION ---
         // Every node starts as its own parent (its own set)
-        int[] parent = new int[V];
-        for (int i = 0; i < V; i++) parent[i] = i;
+        int[] parent = new int[n];
+        for (int i = 0; i < n; i++) parent[i] = i;
 
-        int edgesCount = 0; // Tracks edges added to MST (target is V-1)
+        int edgesCount = 0; // Tracks edges added to MST (target is n-1)
         int totalCost = 0;  // Sum of weights in MST
 
         System.out.println("\nEdges in the Minimum Spanning Tree:");
 
         // --- CORE LOGIC: GREEDY SEARCH ---
-        // Keep looking for edges until we have V-1 edges
-        while (edgesCount < V - 1) {
+        // Keep looking for edges until we have n-1 edges
+        while (edgesCount < n - 1) {
             int min = 999; // Represents Infinity
             int u = -1, v = -1;
 
             // Nested loops to find the absolute minimum weight edge currently available
-            for (int i = 0; i < V; i++) {
-                for (int j = 0; j < V; j++) {
+            for (int i = 0; i < n; i++) {
+                for (int j = 0; j < n; j++) {
                     // Check if edge exists and is smaller than current min
                     if (graph[i][j] != 0 && graph[i][j] < min) {
                         // CYCLE CHECK: Are these two nodes already connected?
@@ -71,13 +71,13 @@ public class KruskalMatrix {
                 union(parent, u, v); // Merge the two sets
                 edgesCount++;        // Increment edge counter
             } else {
-                // If no edge was found but edgesCount < V-1, graph is disconnected
+                // If no edge was found but edgesCount < n-1, graph is disconnected
                 break;
             }
         }
 
         // --- FINAL OUTPUT ---
-        if (edgesCount == V - 1) {
+        if (edgesCount == n - 1) {
             System.out.println("Total Cost of MST: " + totalCost);
         } else {
             System.out.println("No Spanning Tree possible (Graph is disconnected).");
