@@ -6,18 +6,18 @@ MEMORY MAP / QUICK REVISION
 Goal:
 - Show IPC using message passing.
 - Producer sends items through a message queue.
-- Consumer receives items until a stop message arrives.
+- Consumer receives items from the queue.
 
 Logic:
 1. Create message queue.
 2. Fork: parent = producer, child = consumer.
-3. Producer sends data, then a stop value.
-4. Consumer reads and prints data, then exits.
+3. Producer sends fixed items.
+4. Consumer reads and prints items.
 
 Key Variables:
 - msgid -> message queue id
-- mtype -> message type
-- value -> data sent
+- type -> message type
+- data -> data sent
 
 Algorithm Used:
 - Producer-Consumer using System V message queue
@@ -29,92 +29,95 @@ Algorithm Used:
 Program Name: Producer Consumer using Message Passing
 Aim: Write a C program to demonstrate Inter-Process Communication (IPC) using message passing by implementing the Producer Consumer problem.
 Algorithm:
-1. Get number of items.
-2. Create message queue.
-3. Producer sends items and a stop message.
+1. Create message queue.
+2. Fork producer and consumer.
+3. Producer sends fixed items.
 4. Consumer receives and prints items.
 Compilation: gcc 2_producer_consumer_message_passing.c -o pc_msg
 Execution: ./pc_msg
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 #include <sys/ipc.h>
 #include <sys/msg.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define MAX_ITEMS 20
-
-struct msg_buffer {
-    long mtype;
-    int value;
+// Structure for message
+struct message
+{
+    long type;
+    int data;
 };
 
-int main(void)
+int main()
 {
     int msgid;
-    int n, i;
-    struct msg_buffer message;
+    struct message msg;
 
     // Input Section
-    printf("Enter number of items to produce (1-%d): ", MAX_ITEMS);
-    if (scanf("%d", &n) != 1 || n < 1 || n > MAX_ITEMS) {
-        printf("Invalid input.\n");
-        return 0;
-    }
+    // No user input; fixed 5 items are produced and consumed.
 
     // Processing Section
+    // Create message queue
     msgid = msgget(IPC_PRIVATE, IPC_CREAT | 0666);
-    if (msgid == -1) {
-        printf("Message queue creation failed.\n");
-        return 0;
-    }
 
-    if (fork() == 0) {
-        /* Consumer process */
-        while (1) {
-            if (msgrcv(msgid, &message, sizeof(int), 1, 0) == -1) {
-                printf("Message receive failed.\n");
-                return 0;
-            }
-            if (message.value == -1) {
-                break;
-            }
+    // Create child process
+    if(fork() == 0)
+    {
+        // Consumer
+        for(int i = 1; i <= 5; i++)
+        {
+            // Receive message
+            msgrcv(msgid, &msg, sizeof(int), 1, 0);
+
             // Output Section
-            printf("Consumer received: %d\n", message.value);
+            printf("Consumed: %d\n", msg.data);
+
+            sleep(1);
         }
-        return 0;
-    } else {
-        /* Producer process */
-        message.mtype = 1;
-        for (i = 1; i <= n; i++) {
-            message.value = i;
-            msgsnd(msgid, &message, sizeof(int), 0);
+    }
+    else
+    {
+        // Producer
+        msg.type = 1;
+
+        for(int i = 1; i <= 5; i++)
+        {
+            msg.data = i;
+
+            // Send message
+            msgsnd(msgid, &msg, sizeof(int), 0);
+
             // Output Section
-            printf("Producer sent: %d\n", i);
+            printf("Produced: %d\n", i);
+
+            sleep(1);
         }
-        message.value = -1; /* stop message */
-        msgsnd(msgid, &message, sizeof(int), 0);
 
         wait(NULL);
+
+        // Delete message queue
         msgctl(msgid, IPC_RMID, NULL);
     }
 
-    /* Time Complexity: O(n) for n messages. */
+    /* Time Complexity: O(n) for n items (here n = 5). */
     return 0;
 }
 
 /*
 Sample Input:
-Enter number of items to produce (1-20): 3
+No input
 
 Sample Output:
-Producer sent: 1
-Producer sent: 2
-Producer sent: 3
-Consumer received: 1
-Consumer received: 2
-Consumer received: 3
+Produced: 1
+Consumed: 1
+Produced: 2
+Consumed: 2
+Produced: 3
+Consumed: 3
+Produced: 4
+Consumed: 4
+Produced: 5
+Consumed: 5
 */

@@ -4,34 +4,34 @@ MEMORY MAP / QUICK REVISION
 ==================================================
 
 Goal:
-- Synchronize producer and consumer with a shared buffer.
+- Synchronize producer and consumer threads with a shared buffer.
 - Use semaphores for empty, full, and mutex.
-- Show correct read/write ordering.
+- Show correct produce/consume ordering.
 
 Logic:
-1. Create shared memory for buffer.
-2. Create semaphores: mutex, empty, full.
-3. Producer writes n items, consumer reads n items.
+1. Initialize semaphores: mutex, empty, full.
+2. Create producer and consumer threads.
+3. Producer writes fixed items, consumer reads fixed items.
 
 Key Variables:
-- buffer[] -> shared circular buffer
+- buffer -> shared single-slot buffer
 - empty, full, mutex -> semaphores
 
 Algorithm Used:
-- Producer-Consumer using semaphores
+- Producer-Consumer using semaphores (threads)
 
 ==================================================
 */
 
 /*
 Program Name: Producer Consumer with Synchronization (Shared Buffer)
-Aim: Write a c program to demonstrate synchronization between producer-consumer processes that share a common buffer and performs a read and write operation to and from the buffer.
+Aim: Write a c program to demonstrate synchronization between producer-consumer threads that share a common buffer and perform a read and write operation to and from the buffer.
 Algorithm:
-1. Initialize shared memory and semaphores.
+1. Initialize semaphores.
 2. Producer waits on empty and mutex, writes item.
 3. Consumer waits on full and mutex, reads item.
-4. Cleanup resources.
-Compilation: gcc 5_producer_consumer_sync_buffer.c -o pc_sync
+4. Join threads and finish.
+Compilation: gcc 5_producer_consumer_sync_buffer.c -o pc_sync -pthread
 Execution: ./pc_sync
 */
 
@@ -40,7 +40,7 @@ Execution: ./pc_sync
 #include <semaphore.h>
 #include <unistd.h>
 
-int buffer;   // shared variable
+int buffer;
 
 sem_t empty, full, mutex;
 
@@ -60,6 +60,8 @@ void *producer()
 
         sleep(1);
     }
+
+    return NULL;
 }
 
 // Consumer
@@ -77,6 +79,8 @@ void *consumer()
 
         sleep(1);
     }
+
+    return NULL;
 }
 
 int main()
@@ -101,15 +105,17 @@ int main()
 
 /*
 Sample Input:
-Enter number of items to produce (1-20): 4
+No input
 
 Sample Output:
-Producer wrote: 1
-Producer wrote: 2
-Consumer read: 1
-Producer wrote: 3
-Consumer read: 2
-Producer wrote: 4
-Consumer read: 3
-Consumer read: 4
+Produced: 1
+Consumed: 1
+Produced: 2
+Consumed: 2
+Produced: 3
+Consumed: 3
+Produced: 4
+Consumed: 4
+Produced: 5
+Consumed: 5
 */

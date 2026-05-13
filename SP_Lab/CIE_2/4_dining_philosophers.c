@@ -9,16 +9,17 @@ Goal:
 - Use a room semaphore to prevent deadlock.
 
 Logic:
-1. Create semaphore for each fork.
-2. Create one extra semaphore "room" = n-1.
-3. Philosopher picks room, then two forks, eats, releases.
+1. Read number of philosophers (n).
+2. Create semaphore for each fork and one extra "room" = n-1.
+3. Each philosopher thread picks room, then two forks, eats, releases.
 
 Key Variables:
 - forks[] -> semaphore for each fork
 - room -> semaphore limiting entry
+- n -> number of philosophers (<= MAX)
 
 Algorithm Used:
-- Dining Philosophers with room (deadlock avoidance)
+- Dining Philosophers with room (deadlock avoidance, threads)
 
 ==================================================
 */
@@ -27,104 +28,89 @@ Algorithm Used:
 Program Name: Dining Philosophers Synchronization
 Aim: Write a C program to demonstrate synchronization and deadlock handling using the Dining Philosophers problem.
 Algorithm:
-1. Initialize semaphores for forks and room.
-2. Fork philosopher processes.
-3. Each philosopher thinks, eats, and releases forks.
-Compilation: gcc 4_dining_philosophers.c -o dining
+1. Read number of philosophers.
+2. Initialize semaphores for forks and room.
+3. Create philosopher threads.
+4. Each philosopher thinks, eats, and releases forks.
+Compilation: gcc 4_dining_philosophers.c -o dining -pthread
 Execution: ./dining
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include <unistd.h>
 
-#define MAX_PHILO 5
+#define MAX 10
 
-union semun {
-    int val;
-    struct semid_ds *buf;
-    unsigned short *array;
-};
+sem_t forks[MAX];
+sem_t room;
 
-static void sem_wait_op(int semid, int semnum)
+int n; // number of philosophers
+
+// Philosopher function
+void *philosopher(void *num)
 {
-    struct sembuf op;
-    op.sem_num = semnum;
-    op.sem_op = -1;
-    op.sem_flg = 0;
-    semop(semid, &op, 1);
+    int id = *(int *)num;
+
+    int left = id;
+    int right = (id + 1) % n;
+
+    printf("Philosopher %d is thinking.\n", id + 1);
+
+    // Enter room
+    sem_wait(&room);
+
+    // Pick left and right forks
+    sem_wait(&forks[left]);
+    sem_wait(&forks[right]);
+
+    printf("Philosopher %d is eating.\n", id + 1);
+
+    sleep(1);
+
+    // Put forks back
+    sem_post(&forks[right]);
+    sem_post(&forks[left]);
+
+    // Leave room
+    sem_post(&room);
+
+    printf("Philosopher %d finished eating.\n", id + 1);
+
+    return NULL;
 }
 
-static void sem_signal_op(int semid, int semnum)
+int main()
 {
-    struct sembuf op;
-    op.sem_num = semnum;
-    op.sem_op = 1;
-    op.sem_flg = 0;
-    semop(semid, &op, 1);
-}
+    pthread_t p[MAX];
+    int id[MAX];
 
-int main(void)
-{
-    int n, i, semid;
-    union semun su;
+    // User input
+    printf("Enter number of philosophers: ");
+    scanf("%d", &n);
 
-    // Input Section
-    printf("Enter number of philosophers (2-%d): ", MAX_PHILO);
-    if (scanf("%d", &n) != 1 || n < 2 || n > MAX_PHILO) {
-        printf("Invalid input.\n");
-        return 0;
+    // Initialize room semaphore
+    sem_init(&room, 0, n - 1);
+
+    // Initialize forks
+    for(int i = 0; i < n; i++)
+    {
+        sem_init(&forks[i], 0, 1);
     }
 
-    // Processing Section
-    semid = semget(IPC_PRIVATE, n + 1, IPC_CREAT | 0666);
-    if (semid == -1) {
-        printf("Semaphore creation failed.\n");
-        return 0;
+    // Create philosopher threads
+    for(int i = 0; i < n; i++)
+    {
+        id[i] = i;
+        pthread_create(&p[i], NULL, philosopher, &id[i]);
     }
 
-    /* Initialize fork semaphores */
-    su.val = 1;
-    for (i = 0; i < n; i++) {
-        semctl(semid, i, SETVAL, su);
+    // Wait for all philosophers
+    for(int i = 0; i < n; i++)
+    {
+        pthread_join(p[i], NULL);
     }
-
-    /* Room semaphore (n-1) */
-    su.val = n - 1;
-    semctl(semid, n, SETVAL, su);
-
-    for (i = 0; i < n; i++) {
-        if (fork() == 0) {
-            int left = i;
-            int right = (i + 1) % n;
-
-            // Output Section
-            printf("Philosopher %d is thinking.\n", i + 1);
-
-            sem_wait_op(semid, n);       /* room */
-            sem_wait_op(semid, left);    /* left fork */
-            sem_wait_op(semid, right);   /* right fork */
-
-            printf("Philosopher %d is eating.\n", i + 1);
-            sleep(1);
-
-            sem_signal_op(semid, right);
-            sem_signal_op(semid, left);
-            sem_signal_op(semid, n);     /* room */
-
-            printf("Philosopher %d finished eating.\n", i + 1);
-            return 0;
-        }
-    }
-
-    for (i = 0; i < n; i++) {
-        wait(NULL);
-    }
-    semctl(semid, 0, IPC_RMID);
 
     /* Time Complexity: O(n) for n philosophers (each eats once). */
     return 0;
@@ -132,7 +118,7 @@ int main(void)
 
 /*
 Sample Input:
-Enter number of philosophers (2-5): 5
+Enter number of philosophers: 5
 
 Sample Output:
 Philosopher 1 is thinking.

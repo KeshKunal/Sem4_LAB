@@ -9,8 +9,8 @@ Goal:
 - Writer gets exclusive access.
 
 Logic:
-1. Use shared memory for data and read_count.
-2. Use semaphores: mutex for read_count, wrt for writer.
+1. Use shared variables for data and readcount.
+2. Use semaphores: mutex for readcount, wrt for writer.
 3. Readers follow entry/exit protocol.
 4. Writers lock wrt, update data, unlock.
 
@@ -29,157 +29,139 @@ Algorithm Used:
 Program Name: Readers Writers Synchronization
 Aim: Write a program to demonstrate synchronization in shared resource access using the Readers-Writers problem.
 Algorithm:
-1. Initialize shared memory and semaphores.
-2. Fork reader and writer processes.
+1. Initialize semaphores.
+2. Create reader and writer threads.
 3. Apply readers-writers entry/exit rules.
-4. Cleanup shared memory and semaphores.
-Compilation: gcc 3_readers_writers.c -o rw
+4. Join threads and finish.
+Compilation: gcc 3_readers_writers.c -o rw -pthread
 Execution: ./rw
 */
 
 #include <stdio.h>
-#include <stdlib.h>
-#include <sys/ipc.h>
-#include <sys/sem.h>
-#include <sys/shm.h>
-#include <sys/types.h>
-#include <sys/wait.h>
+#include <pthread.h>
+#include <semaphore.h>
 #include <unistd.h>
 
-#define MAX_RW 5
+int data = 0;
+int readcount = 0;
 
-union semun {
-    int val;
-    struct semid_ds *buf;
-    unsigned short *array;
-};
+sem_t mutex, wrt;
 
-struct shared_data {
-    int read_count;
-    int data;
-};
-
-static void sem_wait_op(int semid, int semnum)
+// Reader function
+void *reader(void *arg)
 {
-    struct sembuf op;
-    op.sem_num = semnum;
-    op.sem_op = -1;
-    op.sem_flg = 0;
-    semop(semid, &op, 1);
+    int id = *(int *)arg;
+
+    // Update readcount
+    sem_wait(&mutex);
+
+    readcount++;
+
+    // First reader blocks writer
+    if(readcount == 1)
+    {
+        sem_wait(&wrt);
+    }
+
+    sem_post(&mutex);
+
+    // Reading section
+    printf("Reader %d reads data = %d\n", id, data);
+
+    sleep(1);
+
+    // Exit section
+    sem_wait(&mutex);
+
+    readcount--;
+
+    // Last reader allows writer
+    if(readcount == 0)
+    {
+        sem_post(&wrt);
+    }
+
+    sem_post(&mutex);
+
+    return NULL;
 }
 
-static void sem_signal_op(int semid, int semnum)
+// Writer function
+void *writer(void *arg)
 {
-    struct sembuf op;
-    op.sem_num = semnum;
-    op.sem_op = 1;
-    op.sem_flg = 0;
-    semop(semid, &op, 1);
+    int id = *(int *)arg;
+
+    // Writer enters
+    sem_wait(&wrt);
+
+    data = data + 10;
+
+    printf("Writer %d writes data = %d\n", id, data);
+
+    sleep(1);
+
+    // Writer exits
+    sem_post(&wrt);
+
+    return NULL;
 }
 
-int main(void)
+int main()
 {
-    int shmid, semid;
-    struct shared_data *data;
-    int readers, writers, i;
-    union semun su;
+    int r, w;
 
     // Input Section
-    printf("Enter number of readers (1-%d): ", MAX_RW);
-    if (scanf("%d", &readers) != 1 || readers < 1 || readers > MAX_RW) {
-        printf("Invalid input.\n");
-        return 0;
-    }
-    printf("Enter number of writers (1-%d): ", MAX_RW);
-    if (scanf("%d", &writers) != 1 || writers < 1 || writers > MAX_RW) {
-        printf("Invalid input.\n");
-        return 0;
-    }
+    printf("Enter number of readers: ");
+    scanf("%d", &r);
+
+    printf("Enter number of writers: ");
+    scanf("%d", &w);
+
+    pthread_t readers[r], writers[w];
+
+    int rid[r], wid[w];
 
     // Processing Section
-    shmid = shmget(IPC_PRIVATE, sizeof(struct shared_data), IPC_CREAT | 0666);
-    if (shmid == -1) {
-        printf("Shared memory creation failed.\n");
-        return 0;
+    // Initialize semaphores
+    sem_init(&mutex, 0, 1);
+    sem_init(&wrt, 0, 1);
+
+    // Create reader threads
+    for(int i = 0; i < r; i++)
+    {
+        rid[i] = i + 1;
+
+        pthread_create(&readers[i], NULL, reader, &rid[i]);
     }
 
-    data = (struct shared_data *)shmat(shmid, NULL, 0);
-    if (data == (void *)-1) {
-        printf("Shared memory attach failed.\n");
-        return 0;
-    }
-    data->read_count = 0;
-    data->data = 0;
+    // Create writer threads
+    for(int i = 0; i < w; i++)
+    {
+        wid[i] = i + 1;
 
-    semid = semget(IPC_PRIVATE, 2, IPC_CREAT | 0666);
-    if (semid == -1) {
-        printf("Semaphore creation failed.\n");
-        return 0;
-    }
-    su.val = 1;
-    semctl(semid, 0, SETVAL, su); /* mutex */
-    semctl(semid, 1, SETVAL, su); /* wrt */
-
-    /* Create reader processes */
-    for (i = 0; i < readers; i++) {
-        if (fork() == 0) {
-            // Entry Section
-            sem_wait_op(semid, 0);
-            data->read_count++;
-            if (data->read_count == 1) {
-                sem_wait_op(semid, 1);
-            }
-            sem_signal_op(semid, 0);
-
-            // Output Section
-            printf("Reader %d reads data = %d\n", i + 1, data->data);
-            sleep(1);
-
-            // Exit Section
-            sem_wait_op(semid, 0);
-            data->read_count--;
-            if (data->read_count == 0) {
-                sem_signal_op(semid, 1);
-            }
-            sem_signal_op(semid, 0);
-
-            shmdt(data);
-            return 0;
-        }
+        pthread_create(&writers[i], NULL, writer, &wid[i]);
     }
 
-    /* Create writer processes */
-    for (i = 0; i < writers; i++) {
-        if (fork() == 0) {
-            sem_wait_op(semid, 1);
-            data->data = data->data + 10;
-            // Output Section
-            printf("Writer %d writes data = %d\n", i + 1, data->data);
-            sleep(1);
-            sem_signal_op(semid, 1);
-
-            shmdt(data);
-            return 0;
-        }
+    // Wait for readers
+    for(int i = 0; i < r; i++)
+    {
+        pthread_join(readers[i], NULL);
     }
 
-    // Wait for all children
-    for (i = 0; i < readers + writers; i++) {
-        wait(NULL);
+    // Wait for writers
+    for(int i = 0; i < w; i++)
+    {
+        pthread_join(writers[i], NULL);
     }
 
-    shmdt(data);
-    shmctl(shmid, IPC_RMID, NULL);
-    semctl(semid, 0, IPC_RMID);
-
-    /* Time Complexity: O(r + w) for r readers and w writers. */
+    /* Time Complexity: O(r + w). */
     return 0;
 }
 
 /*
 Sample Input:
-Enter number of readers (1-5): 2
-Enter number of writers (1-5): 1
+Enter number of readers: 2
+Enter number of writers: 1
 
 Sample Output:
 Writer 1 writes data = 10

@@ -7,10 +7,10 @@ Goal:
 - Show IPC using shared memory.
 - Producer writes items into a shared buffer.
 - Consumer reads items from the buffer.
-- Use a simple turn flag to avoid conflict (busy wait).
+- Use simple busy waiting on count to avoid conflict.
 
 Logic:
-1. Create shared memory for buffer and control variables.
+1. Create and attach shared memory for buffer and control variables.
 2. Fork: parent = producer, child = consumer.
 3. Producer writes, consumer reads, update in/out and count.
 
@@ -18,10 +18,9 @@ Key Variables:
 - buffer[] -> shared circular buffer
 - in, out -> write/read positions
 - count -> number of items in buffer
-- turn -> 0 producer, 1 consumer
 
 Algorithm Used:
-- Producer-Consumer using shared memory + turn flag
+- Producer-Consumer using shared memory + busy wait
 
 ==================================================
 */
@@ -30,9 +29,9 @@ Algorithm Used:
 Program Name: Producer Consumer using Shared Memory (Simple)
 Aim: Write a program to demonstrate Inter-Process Communication (IPC) using shared memory by implementing the Producer Consumer problem.
 Algorithm:
-1. Get number of items.
-2. Create and initialize shared memory.
-3. Producer writes items, consumer reads items using turn flag.
+1. Create and initialize shared memory.
+2. Fork producer and consumer.
+3. Producer writes fixed items, consumer reads fixed items.
 4. Cleanup shared memory.
 Compilation: gcc 1_producer_consumer_shared_memory.c -o pc_shm
 Execution: ./pc_shm
@@ -40,99 +39,103 @@ Execution: ./pc_shm
 
 #include <stdio.h>
 #include <stdlib.h>
-#include <sys/ipc.h>
 #include <sys/shm.h>
-#include <sys/types.h>
 #include <sys/wait.h>
 #include <unistd.h>
 
-#define BUFFER_SIZE 5
-#define MAX_ITEMS 20
+#define SIZE 5
 
-struct shared_data {
-    int buffer[BUFFER_SIZE];
+// Shared memory structure
+struct shared
+{
+    int buffer[SIZE];
     int in;
     int out;
     int count;
-    int turn; /* 0 = producer, 1 = consumer */
 };
 
-int main(void)
+int main()
 {
     int shmid;
-    struct shared_data *data;
-    int n, i;
+    struct shared *shm;
 
     // Input Section
-    printf("Enter number of items to produce (1-%d): ", MAX_ITEMS);
-    if (scanf("%d", &n) != 1 || n < 1 || n > MAX_ITEMS) {
-        printf("Invalid input.\n");
-        return 0;
-    }
+    // No user input; fixed 5 items are produced and consumed.
 
     // Processing Section
-    shmid = shmget(IPC_PRIVATE, sizeof(struct shared_data), IPC_CREAT | 0666);
-    if (shmid == -1) {
-        printf("Shared memory creation failed.\n");
-        return 0;
-    }
+    // Create shared memory
+    shmid = shmget(IPC_PRIVATE, sizeof(struct shared), IPC_CREAT | 0666);
 
-    data = (struct shared_data *)shmat(shmid, NULL, 0);
-    if (data == (void *)-1) {
-        printf("Shared memory attach failed.\n");
-        return 0;
-    }
+    // Attach shared memory
+    shm = (struct shared *)shmat(shmid, NULL, 0);
 
-    data->in = 0;
-    data->out = 0;
-    data->count = 0;
-    data->turn = 0;
+    // Initialize
+    shm->in = 0;
+    shm->out = 0;
+    shm->count = 0;
 
-    if (fork() == 0) {
-        /* Consumer process */
-        for (i = 1; i <= n; i++) {
-            while (data->count == 0 || data->turn == 0) {
-                /* Busy wait */
-            }
+    // Create child process
+    if(fork() == 0)
+    {
+        // Consumer
+        for(int i = 1; i <= 5; i++)
+        {
+            // Wait if buffer empty
+            while(shm->count == 0);
+
+            // Consume item
             // Output Section
-            printf("Consumer consumed: %d\n", data->buffer[data->out]);
-            data->out = (data->out + 1) % BUFFER_SIZE;
-            data->count--;
-            data->turn = 0;
+            printf("Consumed: %d\n", shm->buffer[shm->out]);
+
+            shm->out = (shm->out + 1) % SIZE;
+            shm->count--;
+
+            sleep(1);
         }
-        shmdt(data);
-        return 0;
-    } else {
-        /* Producer process */
-        for (i = 1; i <= n; i++) {
-            while (data->count == BUFFER_SIZE || data->turn == 1) {
-                /* Busy wait */
-            }
-            data->buffer[data->in] = i;
+    }
+    else
+    {
+        // Producer
+        for(int i = 1; i <= 5; i++)
+        {
+            // Wait if buffer full
+            while(shm->count == SIZE);
+
+            // Produce item
+            shm->buffer[shm->in] = i;
             // Output Section
-            printf("Producer produced: %d\n", i);
-            data->in = (data->in + 1) % BUFFER_SIZE;
-            data->count++;
-            data->turn = 1;
+            printf("Produced: %d\n", i);
+
+            shm->in = (shm->in + 1) % SIZE;
+            shm->count++;
+
+            sleep(1);
         }
+
         wait(NULL);
-        shmdt(data);
+
+        // Remove shared memory
+        shmdt(shm);
         shmctl(shmid, IPC_RMID, NULL);
     }
 
-    /* Time Complexity: O(n) for n items. */
+    /* Time Complexity: O(n) for n items (here n = 5). */
     return 0;
 }
 
 /*
 Sample Input:
-Enter number of items to produce (1-20): 3
+No input
 
 Sample Output:
-Producer produced: 1
-Consumer consumed: 1
-Producer produced: 2
-Consumer consumed: 2
-Producer produced: 3
-Consumer consumed: 3
+Produced: 1
+Consumed: 1
+Produced: 2
+Consumed: 2
+Produced: 3
+Consumed: 3
+Produced: 4
+Consumed: 4
+Produced: 5
+Consumed: 5
 */
