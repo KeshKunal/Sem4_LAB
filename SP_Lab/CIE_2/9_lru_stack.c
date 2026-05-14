@@ -41,9 +41,9 @@ Execution: ./lru
 int main(void)
 {
     int pages[MAX_PAGES];
-    int stack[MAX_FRAMES];
+    int stack[MAX_FRAMES]; // bottom is least recently used
     int n, f, i, j;
-    int count = 0;
+    int count = 0; // how many frames filled
     int faults = 0;
 
     // Input Section
@@ -71,14 +71,16 @@ int main(void)
         }
 
         if (pos != -1) {
-            /* Page hit: move to top */
+            /* Page hit: move to top 
+            shifting left from the hit position “closes the gap,” then the page goes to the top.*/
             int temp = stack[pos];
             for (j = pos; j < count - 1; j++) {
                 stack[j] = stack[j + 1];
             }
             stack[count - 1] = temp;
         } else {
-            /* Page fault */
+            /* Page fault 
+            shifting left drops the least recently used page at index 0*/
             faults++;
             if (count < f) {
                 stack[count++] = pages[i];

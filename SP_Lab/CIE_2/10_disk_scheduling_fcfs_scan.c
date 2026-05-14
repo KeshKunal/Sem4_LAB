@@ -35,104 +35,110 @@ Execution: ./disk
 
 #include <stdio.h>
 
-#define MAX_REQ 20
-
-static void bubble_sort(int a[], int n)
+int main()
 {
+    int req[20], n, head, disk, dir;
     int i, j, temp;
-    for (i = 0; i < n - 1; i++) {
-        for (j = 0; j < n - i - 1; j++) {
-            if (a[j] > a[j + 1]) {
-                temp = a[j];
-                a[j] = a[j + 1];
-                a[j + 1] = temp;
-            }
-        }
-    }
-}
+    int fcfs = 0, scan = 0;
 
-int main(void)
-{
-    int req[MAX_REQ], n, i;
-    int head, disk_size, direction;
-    int total_fcfs = 0, total_scan = 0;
-
-    // Input Section
-    printf("Enter number of requests (1-%d): ", MAX_REQ);
+    // Input
+    printf("Enter number of requests: ");
     scanf("%d", &n);
+
     printf("Enter request sequence:\n");
-    for (i = 0; i < n; i++) {
+    for(i = 0; i < n; i++)
+    {
         scanf("%d", &req[i]);
     }
+
     printf("Enter initial head position: ");
     scanf("%d", &head);
-    printf("Enter disk size (max cylinder number): ");
-    scanf("%d", &disk_size);
-    printf("Enter direction (0 for left, 1 for right): ");
-    scanf("%d", &direction);
 
-    // Processing Section - FCFS
+    printf("Enter disk size: ");
+    scanf("%d", &disk);
+
+    printf("Enter direction (0-left, 1-right): ");
+    scanf("%d", &dir);
+
+    // -------- FCFS --------
     int current = head;
-    for (i = 0; i < n; i++) {
-        int diff = req[i] - current;
-        if (diff < 0) diff = -diff;
-        total_fcfs += diff;
+
+    for(i = 0; i < n; i++)
+    {
+        if(req[i] > current)
+            fcfs += req[i] - current;
+        else
+            fcfs += current - req[i];
+
         current = req[i];
     }
 
-    // Processing Section - SCAN
-    int sorted[MAX_REQ];
-    for (i = 0; i < n; i++) {
-        sorted[i] = req[i];
+    // -------- SORT --------
+    for(i = 0; i < n - 1; i++)
+    {
+        for(j = 0; j < n - i - 1; j++)
+        {
+            if(req[j] > req[j + 1])
+            {
+                temp = req[j];
+                req[j] = req[j + 1];
+                req[j + 1] = temp;
+            }
+        }
     }
-    bubble_sort(sorted, n);
 
-    int idx = 0;
-    while (idx < n && sorted[idx] < head) {
-        idx++;
+    // Find head position index
+    int pos = 0;
+
+    while(pos < n && req[pos] < head)
+    {
+        pos++;
     }
 
     current = head;
-    if (direction == 1) {
-        /* move right */
-        for (i = idx; i < n; i++) {
-            int diff = sorted[i] - current;
-            if (diff < 0) diff = -diff;
-            total_scan += diff;
-            current = sorted[i];
+
+    // -------- SCAN RIGHT --------
+    if(dir == 1)
+    {
+        for(i = pos; i < n; i++)
+        {
+            scan += req[i] - current;
+            current = req[i];
         }
-        if (current != disk_size - 1) {
-            total_scan += (disk_size - 1 - current);
-            current = disk_size - 1;
-        }
-        for (i = idx - 1; i >= 0; i--) {
-            int diff = current - sorted[i];
-            total_scan += diff;
-            current = sorted[i];
-        }
-    } else {
-        /* move left */
-        for (i = idx - 1; i >= 0; i--) {
-            int diff = current - sorted[i];
-            total_scan += diff;
-            current = sorted[i];
-        }
-        if (current != 0) {
-            total_scan += current;
-            current = 0;
-        }
-        for (i = idx; i < n; i++) {
-            int diff = sorted[i] - current;
-            total_scan += diff;
-            current = sorted[i];
+
+        scan += (disk - 1) - current;
+        current = disk - 1;
+
+        for(i = pos - 1; i >= 0; i--)
+        {
+            scan += current - req[i];
+            current = req[i];
         }
     }
 
-    // Output Section
-    printf("FCFS Total Head Movement: %d\n", total_fcfs);
-    printf("SCAN Total Head Movement: %d\n", total_scan);
+    // -------- SCAN LEFT --------
+    else
+    {
+        for(i = pos - 1; i >= 0; i--)
+        {
+            scan += current - req[i];
+            current = req[i];
+        }
 
-    /* Time Complexity: O(n^2) due to bubble sort. */
+        scan += current;
+        current = 0;
+
+        for(i = pos; i < n; i++)
+        {
+            scan += req[i] - current;
+            current = req[i];
+        }
+    }
+
+    // Output
+    printf("\nFCFS Total Head Movement = %d\n", fcfs);
+    printf("SCAN Total Head Movement = %d\n", scan);
+
     return 0;
 }
 

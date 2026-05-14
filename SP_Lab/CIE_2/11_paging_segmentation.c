@@ -4,16 +4,16 @@ MEMORY MAP / QUICK REVISION
 ==================================================
 
 Goal:
-- Demonstrate paging and segmentation address translation.
+- Demonstrate address translation using paging or segmentation.
 
 Logic:
-1. Paging: use page table to map page -> frame.
-2. Segmentation: use base and limit for each segment.
-3. Validate offset and compute physical address.
+1. User selects paging or segmentation.
+2. Paging: validate page/offset, check page table, compute physical address.
+3. Segmentation: validate segment/offset against limit, compute physical address.
 
 Key Variables:
-- page_table[] -> frame number for each page
-- base[], limit[] -> segment table
+- page_table[] -> frame number for each page (-1 means not present)
+- base[], limit[] -> segment table entries
 
 Algorithm Used:
 - Paging and Segmentation translation
@@ -25,89 +25,146 @@ Algorithm Used:
 Program Name: Paging and Segmentation Simulation
 Aim: Write a C program to simulate the Paging and Segmentation techniques.
 Algorithm:
-1. Input paging details and translate a logical address.
-2. Input segmentation details and translate a logical address.
+1. Choose paging or segmentation.
+2. Input the required table and a logical address.
+3. Validate and compute physical address.
 Compilation: gcc 11_paging_segmentation.c -o mem
 Execution: ./mem
 */
 
+/*
+========================================
+11_paging_segmentation.c
+
+PAGING:
+Physical Address =
+Frame * Page Size + Offset
+
+SEGMENTATION:
+Physical Address =
+Base + Offset
+========================================
+*/
+
 #include <stdio.h>
 
-#define MAX_PAGES 10
-#define MAX_SEGS 10
+#define MAX 10
 
-int main(void)
+int main()
 {
-    int page_size, num_pages;
-    int page_table[MAX_PAGES];
-    int page, offset, frame, physical;
+    int choice;
 
-    int num_segs;
-    int base[MAX_SEGS], limit[MAX_SEGS];
-    int seg, off;
+    printf("1. Paging\n2. Segmentation\n");
+    printf("Enter choice: ");
+    scanf("%d", &choice);
 
-    // Input Section - Paging
-    printf("Enter page size: ");
-    scanf("%d", &page_size);
-    printf("Enter number of pages (1-%d): ", MAX_PAGES);
-    scanf("%d", &num_pages);
-    printf("Enter page table (frame number for each page, -1 if not present):\n");
-    for (int i = 0; i < num_pages; i++) {
-        scanf("%d", &page_table[i]);
+    /* ---------- PAGING ---------- */
+
+    if(choice == 1)
+    {
+        int page_size, n;
+        int page_table[MAX];
+        int page, offset;
+        int frame, physical;
+        int i;
+
+        printf("Enter page size: ");
+        scanf("%d", &page_size);
+
+        printf("Enter number of pages: ");
+        scanf("%d", &n);
+
+        printf("Enter frame number for each page:\n");
+
+        for(i = 0; i < n; i++)
+        {
+            printf("Page %d: ", i);
+            scanf("%d", &page_table[i]);
+        }
+
+        printf("Enter page number and offset: ");
+        scanf("%d %d", &page, &offset);
+
+        if(page >= n || offset >= page_size)
+        {
+            printf("Invalid Address\n");
+        }
+        else if(page_table[page] == -1)
+        {
+            printf("Page Fault\n");
+        }
+        else
+        {
+            frame = page_table[page];
+
+            physical = frame * page_size + offset;
+
+            printf("Physical Address = %d\n",
+                   physical);
+        }
     }
-    printf("Enter logical address (page number and offset): ");
-    scanf("%d %d", &page, &offset);
 
-    // Processing Section - Paging
-    if (page < 0 || page >= num_pages || offset < 0 || offset >= page_size) {
-        printf("Invalid paging logical address.\n");
-    } else if (page_table[page] == -1) {
-        printf("Page fault: page not in memory.\n");
-    } else {
-        frame = page_table[page];
-        physical = frame * page_size + offset;
-        // Output Section
-        printf("Paging Physical Address: %d\n", physical);
+    /* ---------- SEGMENTATION ---------- */
+
+    else if(choice == 2)
+    {
+        int n;
+        int base[MAX], limit[MAX];
+        int seg, offset;
+        int physical;
+        int i;
+
+        printf("Enter number of segments: ");
+        scanf("%d", &n);
+
+        for(i = 0; i < n; i++)
+        {
+            printf("Base and Limit for Segment %d: ", i);
+            scanf("%d %d", &base[i], &limit[i]);
+        }
+
+        printf("Enter segment number and offset: ");
+        scanf("%d %d", &seg, &offset);
+
+        if(seg >= n || offset >= limit[seg])
+        {
+            printf("Segmentation Fault\n");
+        }
+        else
+        {
+            physical = base[seg] + offset;
+
+            printf("Physical Address = %d\n",
+                   physical);
+        }
     }
 
-    // Input Section - Segmentation
-    printf("\nEnter number of segments (1-%d): ", MAX_SEGS);
-    scanf("%d", &num_segs);
-    printf("Enter base and limit for each segment:\n");
-    for (int i = 0; i < num_segs; i++) {
-        scanf("%d %d", &base[i], &limit[i]);
-    }
-    printf("Enter logical address (segment number and offset): ");
-    scanf("%d %d", &seg, &off);
-
-    // Processing Section - Segmentation
-    if (seg < 0 || seg >= num_segs || off < 0 || off >= limit[seg]) {
-        printf("Invalid segmentation logical address.\n");
-    } else {
-        physical = base[seg] + off;
-        // Output Section
-        printf("Segmentation Physical Address: %d\n", physical);
+    else
+    {
+        printf("Invalid Choice\n");
     }
 
-    /* Time Complexity: O(1) per address translation. */
     return 0;
 }
 
 /*
-Sample Input:
-Enter page size: 100
-Enter number of pages (1-10): 3
-Enter page table (frame number for each page, -1 if not present):
+Sample Input (Paging):
+1
+100
+3
 2 0 4
-Enter logical address (page number and offset): 1 20
+1 20
 
-Enter number of segments (1-10): 2
-Enter base and limit for each segment:
+Sample Output (Paging):
+Physical Address = 20
+
+Sample Input (Segmentation):
+2
+2
 1000 400
 2000 300
-Enter logical address (segment number and offset): 0 200
+0 200
 
-Sample Output:
-Paging Physical Address: 20
-Segmentation Physical Address: 1200
+Sample Output (Segmentation):
+Physical Address = 1200
 */
