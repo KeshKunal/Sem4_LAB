@@ -23,53 +23,42 @@ FLOYD_WARSHALL(graph, n):
     PRINT dist[][]
 */
 class P7_FloydWarshall {
-    static final int INF = 9999;
 
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        System.out.print("Enter number of vertices: ");
-        int n = sc.nextInt();
-
-        int[][] dist = new int[n][n];
-
-        System.out.println("Enter adjacency matrix (0 for no edge):");
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                int val = sc.nextInt();
-                if (i == j) {
-                    dist[i][j] = 0; // Distance to self is 0
-                } else if (val == 0) {
-                    dist[i][j] = INF; // No edge
-                } else {
-                    dist[i][j] = val; // Given edge weight
-                }
-            }
-        }
-
-        // Floyd-Warshall core logic
-        for (int k = 0; k < n; k++) {
-            for (int i = 0; i < n; i++) {
-                for (int j = 0; j < n; j++) {
-                    if (dist[i][k] + dist[k][j] < dist[i][j]) {
-                        dist[i][j] = dist[i][k] + dist[k][j];
+    public static void compute(int[][] dist){
+        int V = dist.length;
+        for(int k=0; k<V; k++){
+            for(int i=0; i<V ; i++){
+                for(int j=0; j<V ; j++){
+                    if((dist[i][k] + dist[k][j])<dist[i][j]){
+                        dist[i][j] = dist[i][k]+dist[k][j];
                     }
                 }
             }
         }
+    }
 
-        System.out.println("All-pairs shortest path matrix:");
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                if (dist[i][j] == INF) {
-                    System.out.print("INF ");
-                } else {
-                    System.out.print(dist[i][j] + " ");
-                }
+    public static void main(String args[]){
+        Scanner sc =  new Scanner(System.in);
+        System.out.print("Enter number of nodes:");
+        int n = sc.nextInt();
+        int[][] graph = new int[n][n];
+        System.out.println("Enter the adjacency matrix (999 for no edges, 0 for diagonal):");
+        for(int i=0; i<n; i++){
+            for(int j=0;j<n;j++){
+                graph[i][j] = sc.nextInt();
+            }
+        }
+        sc.close();
+
+        compute(graph);
+
+        System.out.println("Output distance matrix:");
+        for(int[] row :graph){
+            for(int val : row){
+                System.out.print(val+" ");
             }
             System.out.println();
         }
 
-        sc.close();
     }
 }

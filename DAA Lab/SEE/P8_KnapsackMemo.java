@@ -34,59 +34,46 @@ KNAPSACK(numItems, capacity, weights[], profits[]):
 */
 class P8_KnapsackMemo {
 
-    static void compute(int numItems, int capacity, int[] weights, int[] profits) {
-        int[][] dpTable = new int[numItems + 1][capacity + 1];
+    public static void main(String args[]) {
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter number of objects: ");
+        int n = sc.nextInt();
 
-        // Build DP table
-        for (int item = 1; item <= numItems; item++) {
-            for (int cap = 1; cap <= capacity; cap++) {
-                if (weights[item] <= cap) {
-                    dpTable[item][cap] = Math.max(
-                        dpTable[item - 1][cap],
-                        profits[item] + dpTable[item - 1][cap - weights[item]]
-                    );
+        int w[] = new int[n + 1];
+        int p[] = new int[n + 1];
+        // FIXED: Start i at 1 so w[1] matches the first item in the DP table v[1][j]
+        for (int i = 1; i <= n; i++) {
+            System.out.print("Enter weight and profit for Item " + i + ": ");
+            w[i] = sc.nextInt();
+            p[i] = sc.nextInt();
+        }
+
+        System.out.print("Enter capacity: ");
+        int m = sc.nextInt();
+        int v[][] = new int[n + 1][m + 1];
+        sc.close();
+
+        for (int i = 1; i <= n; i++) {
+            for (int j = 1; j <= m; j++) {
+                if (w[i] <= j) {
+                    // Now w[i] and p[i] correctly point to the current item i
+                    v[i][j] = Math.max(v[i - 1][j], v[i - 1][j - w[i]] + p[i]);
                 } else {
-                    dpTable[item][cap] = dpTable[item - 1][cap];
+                    v[i][j] = v[i - 1][j];
                 }
             }
         }
-
-        // Backtrack to find selected items
-        int item = numItems;
-        int remainingCap = capacity;
-        System.out.println("Selected Objects:");
-        while (item > 0 && remainingCap > 0) {
-            if (dpTable[item][remainingCap] != dpTable[item - 1][remainingCap]) {
-                System.out.println("Object: " + item);
-                remainingCap = remainingCap - weights[item];
-                item--;
-            } else {
-                item--;
+        int i=n, j=m;
+        System.out.println("Max Profit: " + v[n][m]);
+        System.out.println("Selected Items:");
+        while (i>0 && j>0) {
+            if (v[i][j] != v[i - 1][j]) {
+                System.out.println("Item " + i);
+                j -= w[i];
+                i--;
             }
+            else
+                i--;
         }
-
-        System.out.println("Optimal Profit is: " + dpTable[numItems][capacity]);
-    }
-
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        System.out.print("Enter no. of objects and Capacity of Knapsack: ");
-        int numItems = sc.nextInt();
-        int capacity = sc.nextInt();
-
-        int[] weights = new int[numItems + 1];
-        int[] profits = new int[numItems + 1];
-
-        System.out.println("Enter weight and profit of each object:");
-        for (int item = 1; item <= numItems; item++) {
-            System.out.print("Object " + item + ": ");
-            weights[item] = sc.nextInt();
-            profits[item] = sc.nextInt();
-        }
-
-        compute(numItems, capacity, weights, profits);
-
-        sc.close();
     }
 }

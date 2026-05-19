@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 /*
 MEMORY MAP
 ----------
@@ -13,82 +11,73 @@ Key Idea: Repeated edge relaxation
 
 PSEUDO CODE
 -----------
-BELLMAN_FORD(graph, src, n):
+BELLMAN_FORD(edges, V, src):
     dist[] = {INF}, dist[src] = 0
-    FOR count = 0 to n-2 DO
-        FOR each edge (u, v) with weight w DO
+    FOR i = 1 to V-1 DO
+        FOR each edge (u, v) with weight w in edges DO
             IF dist[u] != INF AND dist[u] + w < dist[v] THEN
                 dist[v] = dist[u] + w
 
     // Negative cycle detection
-    FOR each edge (u, v) with weight w DO
+    FOR each edge (u, v) with weight w in edges DO
         IF dist[u] != INF AND dist[u] + w < dist[v] THEN
             PRINT "Negative cycle exists"
             RETURN
     PRINT dist[]
+
+Time Complexity: O(V*E)
+Space Complexity: O(V)
 */
-class P9_BellmanFord {
-    static final int INF = 9999;
-
-    public static void main(String[] args) {
-        Scanner sc = new Scanner(System.in);
-
-        System.out.print("Enter number of vertices: ");
-        int n = sc.nextInt();
-
-        int[][] graph = new int[n][n];
-        System.out.println("Enter adjacency matrix (0 for no edge):");
-        for (int i = 0; i < n; i++) {
-            for (int j = 0; j < n; j++) {
-                graph[i][j] = sc.nextInt();
-            }
-        }
-
-        System.out.print("Enter source vertex (0 to " + (n - 1) + "): ");
-        int src = sc.nextInt();
-
-        int[] dist = new int[n];
-        for (int i = 0; i < n; i++) {
-            dist[i] = INF;
-        }
+import java.util.Arrays;
+import java.util.Scanner;
+public class P9_BellmanFord {
+    public static void bellmanford(int[][] edges, int V, int src){
+        int[] dist = new int[V];
+        Arrays.fill(dist, Integer.MAX_VALUE);
         dist[src] = 0;
 
-        // Relax all edges V-1 times
-        for (int count = 0; count < n - 1; count++) {
-            for (int u = 0; u < n; u++) {
-                for (int v = 0; v < n; v++) {
-                    int w = graph[u][v];
-                    if (w != 0 && dist[u] != INF && dist[u] + w < dist[v]) {
-                        dist[v] = dist[u] + w;
-                    }
+        for(int i=1; i<=V; i++){
+            for(int[] edge : edges){
+                int u = edge[0];
+                int v = edge[1];
+                int wt = edge[2];
+                if((dist[u] != Integer.MAX_VALUE) && (dist[u] + wt) < dist[v]){
+                    dist[v] = dist[u] + wt;
                 }
             }
         }
 
-        // Check for negative cycles
-        boolean hasNegativeCycle = false;
-        for (int u = 0; u < n; u++) {
-            for (int v = 0; v < n; v++) {
-                int w = graph[u][v];
-                if (w != 0 && dist[u] != INF && dist[u] + w < dist[v]) {
-                    hasNegativeCycle = true;
-                }
+        for(int[] edge : edges){
+            int u = edge[0];
+            int v = edge[1];
+            int wt = edge[2];
+            if((dist[u] != Integer.MAX_VALUE) && (dist[u] + wt) < dist[v]){
+                System.out.println("Negative weight cycle detected!");
+                return;
             }
         }
-
-        if (hasNegativeCycle) {
-            System.out.println("Graph contains a negative weight cycle");
-        } else {
-            System.out.println("Shortest distances from source " + src + ":");
-            for (int i = 0; i < n; i++) {
-                if (dist[i] == INF) {
-                    System.out.println(i + " -> INF");
-                } else {
-                    System.out.println(i + " -> " + dist[i]);
-                }
-            }
+        System.out.println("Vertex\tDistance from source ("+src+")");
+        for(int i=0;i<V;i++){
+            System.out.println(i+"\t\t"+dist[i]);
         }
+    }
 
+    public static void main(String args[]){
+        Scanner sc = new Scanner(System.in);
+        System.out.print("Enter number of vertices: ");
+        int V = sc.nextInt();
+        System.out.print("Enter number of edges: ");
+        int E = sc.nextInt();
+        int[][] edges = new int[E][3];
+        System.out.println("Enter edges in the form (Source, Destination, weight):");
+        for(int i=0; i<E; i++){
+            edges[i][0] = sc.nextInt();
+            edges[i][1] = sc.nextInt();
+            edges[i][2] = sc.nextInt();
+        }
+        System.out.print("Enter the source vertex: ");
+        int src = sc.nextInt();
+        bellmanford(edges, V, src);
         sc.close();
     }
 }

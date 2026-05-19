@@ -1,4 +1,3 @@
-import java.util.Scanner;
 
 /*
 MEMORY MAP
@@ -24,23 +23,26 @@ SUBSET(arr, index, sum, result):
     // Exclude current element
     SUBSET(arr, index + 1, sum, result)
 */
+
+import java.util.Scanner;
 class P11_SubsetSum {
+    // Backtracking: choose to include or exclude each element to reach target sum.
     static void subset(int[] arr, int index, int sum, String result) {
-        // If subset found
+        // Base case: target achieved, print current subset path.
         if (sum == 0) {
             System.out.println("Subset: " + result);
             return;
         }
 
-        // Stop condition
+        // Stop exploring if no elements remain or sum becomes negative.
         if (index == arr.length || sum < 0) {
             return;
         }
 
-        // Include current element
+        // Include current element and reduce remaining sum.
         subset(arr, index + 1, sum - arr[index], result + arr[index] + " ");
 
-        // Exclude current element
+        // Exclude current element and keep sum unchanged.
         subset(arr, index + 1, sum, result);
     }
 
@@ -60,8 +62,18 @@ class P11_SubsetSum {
         int sum = sc.nextInt();
 
         System.out.println("Possible Subsets:");
+        // Start from index 0 with empty subset.
         subset(arr, 0, sum, "");
 
         sc.close();
     }
 }
+
+/*
+Applications:
+Partition problems
+Target sum problems
+Resource allocation
+
+
+*/
