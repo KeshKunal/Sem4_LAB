@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 /*
 MEMORY MAP
 ----------
@@ -29,6 +27,8 @@ HOARE_PARTITION(arr, low, high):
         IF i >= j THEN RETURN j
         SWAP(arr[i], arr[j])
 */
+
+import java.util.Scanner;
 class P1_QuickSortHoare {
     static void swap(int[] arr, int i, int j) {
         int temp = arr[i];

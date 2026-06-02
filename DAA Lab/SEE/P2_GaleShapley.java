@@ -1,5 +1,3 @@
-import java.util.Scanner;
-
 /*
 MEMORY MAP
 ----------
@@ -24,6 +22,8 @@ GALE_SHAPLEY(menPref, womenPref, n):
             MATCH(m, w)
     RETURN stable matching
 */
+
+import java.util.Scanner;
 class P2_GaleShapley {
     static int getFreeMan(boolean[] free) {
         for (int i = 0; i < free.length; i++) {
