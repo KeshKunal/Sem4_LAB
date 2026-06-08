@@ -37,24 +37,6 @@ public class AllNQueens {
     static int[] board; 
     static int solutionCount = 0;
 
-    public static void main(String[] args) {
-        Scanner scanner = new Scanner(System.in);
-        
-        // 1. Prompt the user for the board size
-        System.out.print("Enter the number of queens (N): ");
-        N = scanner.nextInt();
-        
-        // 2. Initialize the board array now that N is known
-        board = new int[N];
-        
-        System.out.println("\nFinding solutions for " + N + " Queens...\n");
-        
-        solve(0);
-        System.out.println("Total solutions: " + solutionCount);
-        
-        scanner.close();
-    }
-
     static void solve(int row) {
         if (row == N) {
             printBoard();
@@ -66,7 +48,6 @@ public class AllNQueens {
             if (isSafe(row, col)) {
                 board[row] = col; // Place queen
                 solve(row + 1);   // Recurse for next row
-                // No need to reset board[row] since it will be overwritten
             }
         }
     }
@@ -90,5 +71,21 @@ public class AllNQueens {
             System.out.println();
         }
         System.out.println();
+    }
+
+    public static void main(String[] args) {
+        Scanner sc = new Scanner(System.in);
+
+        System.out.print("Enter the number of queens (N): ");
+        N = sc.nextInt();
+        
+        board = new int[N];
+        
+        System.out.println("\nFinding solutions for " + N + " Queens...\n");
+        
+        solve(0);
+        System.out.println("Total solutions: " + solutionCount);
+        
+        sc.close();
     }
 }
