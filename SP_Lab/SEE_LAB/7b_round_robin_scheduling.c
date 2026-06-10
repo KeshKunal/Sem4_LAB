@@ -35,68 +35,64 @@ Execution: ./rr
 
 #include <stdio.h>
 
-#define MAX_P 20
+#define MAX_P 10
 
-int main(void)
+int main()
 {
-    int n, tq;
-    int bt[MAX_P], rt[MAX_P], ct[MAX_P], wt[MAX_P], tat[MAX_P];
+    int n, tq, time = 0;
+    int bt[MAX_P], rt[MAX_P];
+    int wt[MAX_P], tat[MAX_P];
+    int i, remaining;
+    float total_wt = 0, total_tat = 0;
 
-    printf("Round Robin Scheduling\n");
     printf("Enter number of processes: ");
     scanf("%d", &n);
 
-    if (n <= 0 || n > MAX_P) {
-        printf("Invalid number of processes.\n");
-        return 1;
-    }
+    remaining = n;
 
-    printf("Enter time quantum: ");
-    scanf("%d", &tq);
-    if (tq <= 0) {
-        printf("Time quantum must be positive.\n");
-        return 1;
-    }
-
-    for (int i = 0; i < n; i++) {
-        printf("Burst time of P%d: ", i + 1);
+    for (i = 0; i < n; i++)
+    {
+        printf("Burst time for P%d: ", i + 1);
         scanf("%d", &bt[i]);
         rt[i] = bt[i];
     }
 
-    int time = 0;
-    int done;
+    printf("Enter time quantum: ");
+    scanf("%d", &tq);
 
-    do {
-        done = 1;
-        for (int i = 0; i < n; i++) {
-            if (rt[i] > 0) {
-                done = 0;
-                if (rt[i] > tq) {
+    while (remaining > 0)
+    {
+        for (i = 0; i < n; i++)
+        {
+            if (rt[i] > 0)
+            {
+                if (rt[i] > tq)
+                {
                     time += tq;
                     rt[i] -= tq;
-                } else {
+                }
+                else
+                {
                     time += rt[i];
+                    wt[i] = time - bt[i];
                     rt[i] = 0;
-                    ct[i] = time;
+                    remaining--;
                 }
             }
         }
-    } while (!done);
-
-    double totalWT = 0, totalTAT = 0;
-
-    printf("\nProcess\tBT\tCT\tTAT\tWT\n");
-    for (int i = 0; i < n; i++) {
-        tat[i] = ct[i];
-        wt[i] = tat[i] - bt[i];
-        totalWT += wt[i];
-        totalTAT += tat[i];
-        printf("P%d\t%d\t%d\t%d\t%d\n", i + 1, bt[i], ct[i], tat[i], wt[i]);
     }
 
-    printf("\nAverage Waiting Time: %.2f\n", totalWT / n);
-    printf("Average Turnaround Time: %.2f\n", totalTAT / n);
+    printf("\nProcess\tBT\tWT\tTAT\n");
+    for (i = 0; i < n; i++)
+    {
+        tat[i] = bt[i] + wt[i];
+        total_wt += wt[i];
+        total_tat += tat[i];
+        printf("P%d\t%d\t%d\t%d\n", i + 1, bt[i], wt[i], tat[i]);
+    }
+
+    printf("\nAverage Waiting Time: %.2f\n", total_wt / n);
+    printf("Average Turnaround Time: %.2f\n", total_tat / n);
 
     return 0;
 }
