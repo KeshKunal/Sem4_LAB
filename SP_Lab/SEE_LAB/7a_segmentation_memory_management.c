@@ -35,36 +35,35 @@ Execution: ./seg
 
 #include <stdio.h>
 
-#define MAX_SEGS 20
+#define MAX 10
 
-int main(void)
+int main()
 {
-    int segCount;
-    int base[MAX_SEGS], limit[MAX_SEGS];
+    int n;
+    int base[MAX], limit[MAX];
+    int seg, offset;
+    int physical;
+    int i;
 
-    // Input Section
-    printf("Enter number of segments (1-%d): ", MAX_SEGS);
-    scanf("%d", &segCount);
+    printf("Enter number of segments: ");
+    scanf("%d", &n);
 
-    if (segCount <= 0 || segCount > MAX_SEGS) {
-        printf("Invalid number of segments.\n");
-        return 1;
-    }
-
-    for (int i = 0; i < segCount; i++) {
+    for(i = 0; i < n; i++)
+    {
         printf("Base and Limit for Segment %d: ", i);
         scanf("%d %d", &base[i], &limit[i]);
     }
 
-    // Processing Section
-    int seg, offset;
     printf("Enter segment number and offset: ");
     scanf("%d %d", &seg, &offset);
 
-    if (seg < 0 || seg >= segCount || offset < 0 || offset >= limit[seg]) {
+    if(seg >= n || offset >= limit[seg])
+    {
         printf("Segmentation Fault\n");
-    } else {
-        int physical = base[seg] + offset;
+    }
+    else
+    {
+        physical = base[seg] + offset;
         printf("Physical Address = %d\n", physical);
     }
 

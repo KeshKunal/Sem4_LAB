@@ -34,41 +34,45 @@ Execution: ./paging
 
 #include <stdio.h>
 
-#define MAX_PAGES 50
+#define MAX 10
 
-int main(void)
+int main()
 {
-    int pageSize, numPages;
-    int pageTable[MAX_PAGES];
-
-    // Input Section
-    printf("Enter page size: ");
-    scanf("%d", &pageSize);
-    printf("Enter number of pages (1-%d): ", MAX_PAGES);
-    scanf("%d", &numPages);
-
-    if (pageSize <= 0 || numPages <= 0 || numPages > MAX_PAGES) {
-        printf("Invalid paging values.\n");
-        return 1;
-    }
-
-    printf("Enter frame number for each page (use -1 for not present):\n");
-    for (int i = 0; i < numPages; i++) {
-        printf("Page %d -> Frame: ", i);
-        scanf("%d", &pageTable[i]);
-    }
-
-    // Processing Section
+    int page_size, n;
+    int page_table[MAX];
     int page, offset;
+    int frame, physical;
+    int i;
+
+    printf("Enter page size: ");
+    scanf("%d", &page_size);
+
+    printf("Enter number of pages: ");
+    scanf("%d", &n);
+
+    printf("Enter frame number for each page:\n");
+
+    for(i = 0; i < n; i++)
+    {
+        printf("Page %d: ", i);
+        scanf("%d", &page_table[i]);
+    }
+
     printf("Enter page number and offset: ");
     scanf("%d %d", &page, &offset);
 
-    if (page < 0 || page >= numPages || offset < 0 || offset >= pageSize) {
+    if(page >= n || offset >= page_size)
+    {
         printf("Invalid Address\n");
-    } else if (pageTable[page] == -1) {
+    }
+    else if(page_table[page] == -1)
+    {
         printf("Page Fault\n");
-    } else {
-        int physical = pageTable[page] * pageSize + offset;
+    }
+    else
+    {
+        frame = page_table[page];
+        physical = frame * page_size + offset;
         printf("Physical Address = %d\n", physical);
     }
 
