@@ -34,63 +34,59 @@ Execution: ./sstf
 */
 
 #include <stdio.h>
-#include <stdlib.h>
 
-#define MAX_REQ 50
-
-int main(void)
+int main()
 {
+    int req[20], visited[20];
     int n, head;
-    int req[MAX_REQ];
-    int visited[MAX_REQ] = {0};
+    int total = 0;
 
-    // Input Section
-    printf("Enter number of requests (1-%d): ", MAX_REQ);
+    printf("Enter number of requests: ");
     scanf("%d", &n);
 
-    if (n <= 0 || n > MAX_REQ) {
-        printf("Invalid number of requests.\n");
-        return 1;
-    }
-
     printf("Enter request sequence:\n");
-    for (int i = 0; i < n; i++) {
+    for(int i = 0; i < n; i++)
+    {
         scanf("%d", &req[i]);
+        visited[i] = 0;
     }
 
     printf("Enter initial head position: ");
     scanf("%d", &head);
 
-    // Processing Section
-    int total = 0;
-    int current = head;
+    printf("\nSeek Sequence: %d", head);
 
-    printf("SSTF Order: ");
-    for (int done = 0; done < n; done++) {
-        int minDist = 999999;
-        int idx = -1;
+    for(int i = 0; i < n; i++)
+    {
+        int min = 9999;
+        int pos = -1;
 
-        for (int i = 0; i < n; i++) {
-            if (!visited[i]) {
-                int dist = abs(req[i] - current);
-                if (dist < minDist) {
-                    minDist = dist;
-                    idx = i;
+        // Find nearest request
+        for(int j = 0; j < n; j++)
+        {
+            if(!visited[j])
+            {
+                int diff = req[j] - head;
+
+                if(diff < 0)
+                    diff = -diff;
+
+                if(diff < min)
+                {
+                    min = diff;
+                    pos = j;
                 }
             }
         }
 
-        if (idx == -1) {
-            break;
-        }
+        total += min;
+        head = req[pos];
+        visited[pos] = 1;
 
-        printf("%d ", req[idx]);
-        total += abs(req[idx] - current);
-        current = req[idx];
-        visited[idx] = 1;
+        printf(" -> %d", head);
     }
 
-    printf("\nTotal Head Movement (SSTF): %d\n", total);
+    printf("\nTotal Head Movement = %d\n", total);
 
     return 0;
 }
