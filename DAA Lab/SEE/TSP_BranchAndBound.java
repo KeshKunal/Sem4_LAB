@@ -19,14 +19,14 @@ Input:
 Output:
     Minimum tour cost and optimal path
 
-1. IF currentCost ≥ minCost THEN
+1. IF currentCost >= minCost THEN
        RETURN            // Prune this branch
 
 2. IF level = n THEN
-       totalCost ← currentCost + cost[currentCity][0]
+    totalCost = currentCost + cost[currentCity][0]
 
        IF totalCost < minCost THEN
-            minCost ← totalCost
+         minCost = totalCost
             Store current path as best path
        END IF
 
