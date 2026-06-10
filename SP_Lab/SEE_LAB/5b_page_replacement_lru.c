@@ -47,10 +47,6 @@ int main(void)
 
     printf("Enter number of pages in reference string: ");
     scanf("%d", &n);
-    if (n <= 0 || n > MAX_PAGES) {
-        printf("Invalid number of pages.\n");
-        return 1;
-    }
 
     printf("Enter the reference string:\n");
     for (int i = 0; i < n; i++) {
@@ -59,10 +55,6 @@ int main(void)
 
     printf("Enter number of frames: ");
     scanf("%d", &frames);
-    if (frames <= 0 || frames > MAX_FRAMES) {
-        printf("Invalid number of frames.\n");
-        return 1;
-    }
 
     for (int i = 0; i < frames; i++) {
         frame[i] = -1;

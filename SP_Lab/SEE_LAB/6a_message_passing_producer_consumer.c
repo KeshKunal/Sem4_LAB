@@ -45,12 +45,12 @@ int main(void)
     int msgid;
     struct message msg;
 
-    // Processing Section
     msgid = msgget(IPC_PRIVATE, IPC_CREAT | 0666);
 
     if (fork() == 0) {
         // Consumer
         for (int i = 1; i <= 5; i++) {
+            // receive message
             msgrcv(msgid, &msg, sizeof(int), 1, 0);
             printf("Consumed: %d\n", msg.data);
             sleep(1);
@@ -60,6 +60,7 @@ int main(void)
         msg.type = 1;
         for (int i = 1; i <= 5; i++) {
             msg.data = i;
+            // send message
             msgsnd(msgid, &msg, sizeof(int), 0);
             printf("Produced: %d\n", i);
             sleep(1);

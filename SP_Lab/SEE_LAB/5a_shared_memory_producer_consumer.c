@@ -50,7 +50,6 @@ int main(void)
     int shmid;
     struct shared *shm;
 
-    // Processing Section
     shmid = shmget(IPC_PRIVATE, sizeof(struct shared), IPC_CREAT | 0666);
     shm = (struct shared *)shmat(shmid, NULL, 0);
     shm->flag = 0;
@@ -78,7 +77,6 @@ int main(void)
         shmctl(shmid, IPC_RMID, NULL);
     }
 
-    /* Time Complexity: O(n) for n items (here n = 5). */
     return 0;
 }
 
