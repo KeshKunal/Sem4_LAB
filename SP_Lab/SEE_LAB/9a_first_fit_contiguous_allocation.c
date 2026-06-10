@@ -38,48 +38,66 @@ Execution: ./firstfit
 #define MAX_B 10
 #define MAX_P 10
 
-int main(void)
+int main()
 {
-    int b, p;
+    int b, p, i, j;
     int block[MAX_B], process[MAX_P];
     int allocation[MAX_P];
+    int temp_block[MAX_B];
+    int totalHole = 0;
 
-    // Input Section
-    printf("Enter number of memory blocks (1-%d): ", MAX_B);
+    printf("Enter number of memory blocks: ");
     scanf("%d", &b);
+
     printf("Enter sizes of blocks:\n");
-    for (int i = 0; i < b; i++) {
+    for(i = 0; i < b; i++)
+    {
         scanf("%d", &block[i]);
+        temp_block[i] = block[i];
     }
 
-    printf("Enter number of processes (1-%d): ", MAX_P);
+    printf("Enter number of processes: ");
     scanf("%d", &p);
+
     printf("Enter sizes of processes:\n");
-    for (int i = 0; i < p; i++) {
+    for(i = 0; i < p; i++)
+    {
         scanf("%d", &process[i]);
+        allocation[i] = -1;
     }
 
-    // Processing Section
-    for (int i = 0; i < p; i++) {
-        allocation[i] = -1;
-        for (int j = 0; j < b; j++) {
-            if (block[j] >= process[i]) {
+    for(i = 0; i < p; i++)
+    {
+        for(j = 0; j < b; j++)
+        {
+            if(temp_block[j] >= process[i])
+            {
                 allocation[i] = j;
-                block[j] -= process[i];
+                temp_block[j] -= process[i];
                 break;
             }
         }
     }
 
-    // Output Section
     printf("\nProcess\tSize\tBlock\n");
-    for (int i = 0; i < p; i++) {
-        if (allocation[i] != -1) {
-            printf("P%d\t%d\t%d\n", i + 1, process[i], allocation[i] + 1);
-        } else {
-            printf("P%d\t%d\tNot Allocated\n", i + 1, process[i]);
-        }
+
+    for(i = 0; i < p; i++)
+    {
+        printf("P%d\t%d\t", i + 1, process[i]);
+
+        if(allocation[i] != -1)
+            printf("%d\n", allocation[i] + 1);
+        else
+            printf("Not Allocated\n");
     }
+
+    // Calculate Total Hole Size
+    for(i = 0; i < b; i++)
+    {
+        totalHole += temp_block[i];
+    }
+
+    printf("\nTotal Hole Size = %d\n", totalHole);
 
     return 0;
 }

@@ -39,76 +39,63 @@ Execution: ./safety
 int main(void)
 {
     int n, m;
-    int allocation[MAX_P][MAX_R];
-    int max[MAX_P][MAX_R];
-    int need[MAX_P][MAX_R];
+    int allocation[MAX_P][MAX_R], max[MAX_P][MAX_R], need[MAX_P][MAX_R];
     int available[MAX_R];
     int finish[MAX_P] = {0};
     int safe_seq[MAX_P];
-    int count = 0;
+    int i, j, p, count = 0;
 
-    // Input Section
-    printf("Enter number of processes (1-%d): ", MAX_P);
-    scanf("%d", &n);
-    printf("Enter number of resource types (1-%d): ", MAX_R);
-    scanf("%d", &m);
+    printf("Enter number of processes and resources: ");
+    scanf("%d %d", &n, &m);
 
-    printf("Enter Allocation matrix (%d x %d):\n", n, m);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+    printf("Enter Allocation matrix:\n");
+    for (i = 0; i < n; i++)
+        for (j = 0; j < m; j++)
             scanf("%d", &allocation[i][j]);
-        }
-    }
 
-    printf("Enter Max matrix (%d x %d):\n", n, m);
-    for (int i = 0; i < n; i++) {
-        for (int j = 0; j < m; j++) {
+    printf("Enter Max matrix:\n");
+    for (i = 0; i < n; i++)
+        for (j = 0; j < m; j++)
             scanf("%d", &max[i][j]);
-            need[i][j] = max[i][j] - allocation[i][j];
-        }
-    }
 
-    printf("Enter Available resources (%d values):\n", m);
-    for (int j = 0; j < m; j++) {
+    printf("Enter Available resources:\n");
+    for (j = 0; j < m; j++)
         scanf("%d", &available[j]);
-    }
 
-    // Processing Section
-    while (count < n) {
-        int found = 0;
-        for (int i = 0; i < n; i++) {
-            if (!finish[i]) {
+    // Calculate Need matrix
+    for (i = 0; i < n; i++)
+        for (j = 0; j < m; j++)
+            need[i][j] = max[i][j] - allocation[i][j];
+
+    // Find safe sequence
+    for (int k = 0; k < n; k++) {
+        for (p = 0; p < n; p++) {
+            if (finish[p] == 0) {
                 int can_run = 1;
-                for (int j = 0; j < m; j++) {
-                    if (need[i][j] > available[j]) {
+                for (j = 0; j < m; j++) {
+                    if (need[p][j] > available[j]) {
                         can_run = 0;
                         break;
                     }
                 }
+
                 if (can_run) {
-                    for (int j = 0; j < m; j++) {
-                        available[j] += allocation[i][j];
-                    }
-                    finish[i] = 1;
-                    safe_seq[count++] = i;
-                    found = 1;
+                    safe_seq[count++] = p;
+                    for (j = 0; j < m; j++)
+                        available[j] += allocation[p][j];
+                    finish[p] = 1;
                 }
             }
         }
-        if (!found) {
-            break;
-        }
     }
 
-    // Output Section
     if (count == n) {
-        printf("System is in SAFE state.\nSafe sequence: ");
-        for (int i = 0; i < n; i++) {
+        printf("\nSystem is in a SAFE state.\nSafe sequence: ");
+        for (i = 0; i < n; i++)
             printf("P%d ", safe_seq[i]);
-        }
         printf("\n");
     } else {
-        printf("System is NOT in safe state.\n");
+        printf("\nSystem is in an UNSAFE state.\n");
     }
 
     return 0;
