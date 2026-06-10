@@ -59,13 +59,8 @@ void *reader(void *arg)
     }
 
     sem_post(&mutex);
-
-    // Reading section
     printf("Reader %d reads data = %d\n", id, data);
-
     sleep(1);
-
-    // Exit section
     sem_wait(&mutex);
 
     readcount--;

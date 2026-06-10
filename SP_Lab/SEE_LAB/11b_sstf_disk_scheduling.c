@@ -34,6 +34,7 @@ Execution: ./sstf
 */
 
 #include <stdio.h>
+#include <stdlib.h>
 
 int main()
 {
@@ -66,10 +67,7 @@ int main()
         {
             if(!visited[j])
             {
-                int diff = req[j] - head;
-
-                if(diff < 0)
-                    diff = -diff;
+                int diff = abs(req[j] - head);
 
                 if(diff < min)
                 {

@@ -61,14 +61,14 @@ int main(void)
         lastUsed[i] = -1;
     }
 
-    for (int t = 0; t < n; t++) {
+    for (int i = 0; i < n; i++) {
         int page = pages[t];
         int hit = 0;
 
         for (int j = 0; j < frames; j++) {
             if (frame[j] == page) {
                 hit = 1;
-                lastUsed[j] = t;
+                lastUsed[j] = i;
                 break;
             }
         }
@@ -91,7 +91,7 @@ int main(void)
                 replace = lruIdx;
             }
             frame[replace] = page;
-            lastUsed[replace] = t;
+            lastUsed[replace] = i;
             faults++;
         }
     }

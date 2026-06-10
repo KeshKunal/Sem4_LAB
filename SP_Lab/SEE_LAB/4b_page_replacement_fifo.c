@@ -44,13 +44,13 @@ int main(void)
     int n, f;
     int faults = 0;
 
-    printf("Enter length of reference string (1-%d): ", MAX_PAGES);
+    printf("Enter length of reference string : ");
     scanf("%d", &n);
     printf("Enter reference string:\n");
     for (int i = 0; i < n; i++) {
         scanf("%d", &pages[i]);
     }
-    printf("Enter number of frames (1-%d): ", MAX_FRAMES);
+    printf("Enter number of frames : ");
     scanf("%d", &f);
 
     for (int i = 0; i < f; i++) {
