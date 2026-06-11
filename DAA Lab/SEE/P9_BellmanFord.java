@@ -28,8 +28,7 @@ BELLMAN_FORD(edges, V, src):
 Time Complexity: O(V*E)
 Space Complexity: O(V)
 */
-import java.util.Arrays;
-import java.util.Scanner;
+import java.util.*;
 public class P9_BellmanFord {
     public static void bellmanford(int[][] edges, int V, int src){
         int[] dist = new int[V];

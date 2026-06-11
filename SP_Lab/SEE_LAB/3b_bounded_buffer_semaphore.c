@@ -43,7 +43,7 @@ int buffer;
 sem_t empty, full, mutex;
 
 // Producer
-void *producer()
+void *producer(void *args)
 {
     for(int i = 1; i <= 5; i++)
     {
@@ -63,7 +63,7 @@ void *producer()
 }
 
 // Consumer
-void *consumer()
+void *consumer(void *args)
 {
     for(int i = 1; i <= 5; i++)
     {

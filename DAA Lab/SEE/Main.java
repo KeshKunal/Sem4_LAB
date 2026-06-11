@@ -33,9 +33,9 @@ DIJKSTRA(graph, src, n):
 
 import java.util.Scanner;
 
-public class P4_Dijkstra {
+public class P {
 
-    int INF = 9999;
+    static final int INF = 9999;
 
     // Find vertex with minimum distance
     static int minDistance(int dist[], boolean visited[]) {

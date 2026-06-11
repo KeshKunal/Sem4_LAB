@@ -47,11 +47,6 @@ int main(void)
     printf("Enter number of requests (1-%d): ", MAX_REQ);
     scanf("%d", &n);
 
-    if (n <= 0 || n > MAX_REQ) {
-        printf("Invalid number of requests.\n");
-        return 1;
-    }
-
     printf("Enter request sequence:\n");
     for (int i = 0; i < n; i++) {
         scanf("%d", &req[i]);

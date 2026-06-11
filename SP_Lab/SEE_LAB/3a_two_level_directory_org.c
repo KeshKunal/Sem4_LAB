@@ -64,14 +64,15 @@ int main()
     }
 
     printf("\nTwo Level Directory\n");
-
+    printf("Root\n");
     for(int i=0;i<n;i++)
     {
-        printf("\n%s\n",u[i].name);
+        printf("|");
+        printf("\n+-- %s\n",u[i].name);
 
         for(int j=0;j<u[i].files;j++)
         {
-            printf(" +-- %s\n",u[i].file[j]);
+            printf("|  +-- %s\n",u[i].file[j]);
         }
     }
 

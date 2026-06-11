@@ -62,7 +62,7 @@ int main(void)
     }
 
     for (int i = 0; i < n; i++) {
-        int page = pages[t];
+        int page = pages[i];
         int hit = 0;
 
         for (int j = 0; j < frames; j++) {
@@ -74,25 +74,23 @@ int main(void)
         }
 
         if (!hit) {
-            int replace = -1;
-            for (int j = 0; j < frames; j++) {
-                if (frame[j] == -1) {
-                    replace = j;
-                    break;
-                }
-            }
-            if (replace == -1) {
+            faults++;
+
+            if (filled < frames) {
+                frame[filled] = page;
+                lastUsed[filled] = i;
+                filled++;
+            } else {
                 int lruIdx = 0;
                 for (int j = 1; j < frames; j++) {
                     if (lastUsed[j] < lastUsed[lruIdx]) {
-                        lruIdx = j;
+                    lruIdx = j;
                     }
-                }
-                replace = lruIdx;
+                }   
+
+                frame[lruIdx] = page;
+                lastUsed[lruIdx] = i;
             }
-            frame[replace] = page;
-            lastUsed[replace] = i;
-            faults++;
         }
     }
 

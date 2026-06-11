@@ -61,8 +61,7 @@ int main() {
         } 
         if(pos == -1) { 
             time++; 
- 
- 
+
         } 
         else { 
             rt[pos]--; 
