@@ -77,3 +77,15 @@ class P8_KnapsackMemo {
         }
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(n * m) (where n is the number of items and m is the capacity)
+  - Average Case: O(n * m)
+  - Worst Case:   O(n * m) (always computes the DP table of size (n+1) x (m+1))
+Space Complexity:
+  - Auxiliary Space: O(n * m) to store the DP table
+  - Total Space:     O(n * m) to store the DP table and the weights/profits arrays
+*/

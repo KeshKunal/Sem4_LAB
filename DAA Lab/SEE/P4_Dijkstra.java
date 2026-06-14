@@ -35,7 +35,7 @@ import java.util.Scanner;
 
 public class P4_Dijkstra {
 
-    int INF = 9999;
+    static int INF = 9999;
 
     // Find vertex with minimum distance
     static int minDistance(int dist[], boolean visited[]) {
@@ -69,7 +69,7 @@ public class P4_Dijkstra {
 
         int graph[][] = new int[n][n];
 
-        System.out.println("Enter adjacency matrix:");
+        System.out.println("Enter adjacency weight matrix (0 for no edge):");
         for (int i = 0; i < n; i++) {
             for (int j = 0; j < n; j++) {
                 graph[i][j] = sc.nextInt();
@@ -139,3 +139,15 @@ public class P4_Dijkstra {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(n^2) (always loops through all vertices to find min distance and update neighbors)
+  - Average Case: O(n^2)
+  - Worst Case:   O(n^2)
+Space Complexity:
+  - Auxiliary Space: O(n) (for dist, visited, and parent arrays)
+  - Total Space:     O(n^2) to store the adjacency matrix of size n x n
+*/

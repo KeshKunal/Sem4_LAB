@@ -115,3 +115,15 @@ class P2_GaleShapley {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(n^2) (occurs when all men are matched with their first choice immediately, but we still search for a free man in O(n) per step)
+  - Average Case: O(n^3) (due to O(n) linear search for free man and O(n) preference checks over O(n^2) iterations)
+  - Worst Case:   O(n^3) (occurs when maximum number of proposals (n^2) are made, with O(n) search per proposal)
+Space Complexity:
+  - Auxiliary Space: O(n) for state arrays (womanPartner, manFree, nextProposal)
+  - Total Space:     O(n^2) to store preference tables of size n x n
+*/

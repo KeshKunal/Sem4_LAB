@@ -74,6 +74,16 @@ Applications:
 Partition problems
 Target sum problems
 Resource allocation
-
-
 */
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(2^n) (since we need to find all subsets that match the target sum, we explore the subset tree)
+  - Average Case: O(2^n)
+  - Worst Case:   O(2^n)
+Space Complexity:
+  - Auxiliary Space: O(n) representing the maximum recursion depth
+  - Total Space:     O(n) to store the elements array
+*/

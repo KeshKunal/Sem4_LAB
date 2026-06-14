@@ -1,0 +1,224 @@
+================================================================================
+                    DAA LAB - PROGRAM IMPLEMENTATIONS SUMMARY
+================================================================================
+
+--------------------------------------------------------------------------------
+P1: QUICK SORT (HOARE PARTITIONING SCHEME)
+--------------------------------------------------------------------------------
+* Design Technique: Divide and Conquer
+* Purpose         : To sort an array of elements (such as parcel weights) in ascending 
+                    order by partition-based splitting.
+* Time Complexity : 
+  - Best Case   : O(n log n) (occurs when partitions are always balanced)
+  - Average Case: O(n log n)
+  - Worst Case  : O(n^2) (occurs when array is already sorted or reverse sorted 
+                    and pivot selection is suboptimal since first element is chosen as pivot)
+* Space Complexity: 
+  - Auxiliary Space: O(log n) average recursion stack; O(n) worst-case recursion stack
+  - Total Space    : O(n) to store the elements array
+* Applications    : 
+  1. Commercial and database sorting systems where speed is critical.
+  2. Part of hybrid sorting algorithms (like Introsort) in programming libraries.
+  3. Sorting elements in embedded devices with low overhead.
+
+--------------------------------------------------------------------------------
+P2: GALE-SHAPLEY STABLE MATCHING ALGORITHM
+--------------------------------------------------------------------------------
+* Design Technique: Greedy Technique / Iterative Improvement
+* Purpose         : To find a stable matching between two sets of equal size (men 
+                    and women) based on their rankings of preferences.
+* Time Complexity : 
+  - Best Case   : O(n^2) (occurs when all men are matched with their first choice immediately, but we still search for a free man in O(n) per step)
+  - Average Case: O(n^3) (due to O(n) linear search for free man and O(n) preference checks over O(n^2) proposals)
+  - Worst Case  : O(n^3) (occurs when maximum number of proposals (n^2) are made, with O(n) search per proposal)
+* Space Complexity: 
+  - Auxiliary Space: O(n) for state arrays (womanPartner, manFree, nextProposal)
+  - Total Space    : O(n^2) to store preference tables of size n x n
+* Applications    : 
+  1. National Resident Matching Program (NRMP) matching medical students to hospitals.
+  2. College admissions and school choice systems.
+  3. Network routing and peer-to-peer server matching.
+
+--------------------------------------------------------------------------------
+P3: TOPOLOGICAL SORT USING DFS
+--------------------------------------------------------------------------------
+* Design Technique: Decrease and Conquer
+* Purpose         : To find a linear ordering of vertices in a Directed Acyclic 
+                    Graph (DAG) such that for every directed edge u -> v, vertex u 
+                    appears before v.
+* Time Complexity : 
+  - Best Case   : O(V^2) (due to traversing the full row of size V in the adjacency matrix for every visited vertex)
+  - Average Case: O(V^2)
+  - Worst Case  : O(V^2)
+* Space Complexity: 
+  - Auxiliary Space: O(V) (for stack, visited, and recursion call stack)
+  - Total Space    : O(V^2) (due to adjacency matrix graph input storage of size V x V)
+* Applications    : 
+  1. Task scheduling and project planning (PERT charts).
+  2. Resolving software build dependencies (e.g., maven, npm, pip).
+  3. Instruction scheduling in compilers.
+
+--------------------------------------------------------------------------------
+P4: DIJKSTRA'S ALGORITHM
+--------------------------------------------------------------------------------
+* Design Technique: Greedy Technique
+* Purpose         : To find the shortest paths from a single source vertex to all 
+                    other vertices in a weighted graph with non-negative edge weights.
+* Time Complexity : 
+  - Best Case   : O(V^2) (always loops through all vertices to find min distance and update neighbors)
+  - Average Case: O(V^2)
+  - Worst Case  : O(V^2)
+* Space Complexity: 
+  - Auxiliary Space: O(V) (for dist, visited, and parent arrays)
+  - Total Space    : O(V^2) (due to adjacency matrix graph input storage of size V x V)
+* Applications    : 
+  1. GPS navigation systems (Google Maps) to calculate shortest driving routes.
+  2. Routing protocols in networks (e.g., OSPF - Open Shortest Path First).
+  3. Finding connection paths in social networking sites.
+
+--------------------------------------------------------------------------------
+P5: PRIM'S ALGORITHM
+--------------------------------------------------------------------------------
+* Design Technique: Greedy Technique
+* Purpose         : To find a Minimum Spanning Tree (MST) for a weighted, connected 
+                    undirected graph.
+* Time Complexity : 
+  - Best Case   : O(V^3) (due to iterating over all V x V pairs in the nested loops to find the minimum edge for each of the V-1 selected edges)
+  - Average Case: O(V^3)
+  - Worst Case  : O(V^3)
+* Space Complexity: 
+  - Auxiliary Space: O(V) for the inMST tracking array
+  - Total Space    : O(V^2) (due to adjacency matrix graph input storage of size V x V)
+* Applications    : 
+  1. Designing cost-efficient networks (wiring electrical grids, laying pipelines, 
+     telecommunication cables).
+  2. Finding optimal paths in travel planning and logistics.
+  3. Cluster analysis in unsupervised machine learning.
+
+--------------------------------------------------------------------------------
+P6: HORSPOOL'S STRING MATCHING ALGORITHM
+--------------------------------------------------------------------------------
+* Design Technique: Input Enhancement / Space-Time Tradeoff
+* Purpose         : To find the exact location of a pattern string within a larger 
+                    body of text using shift-table preprocessing.
+* Time Complexity : 
+  - Best Case   : O(n/m) (occurs when the pattern is not present and characters align to allow max shifts of size m)
+  - Average Case: O(n)
+  - Worst Case  : O(n * m) (occurs when text and pattern have repeating matching characters, leading to minimal shift of 1)
+* Space Complexity: 
+  - Auxiliary Space: O(1) (shift table of constant size 256 for ASCII)
+  - Total Space    : O(n + m) to store text and pattern strings
+* Applications    : 
+  1. Text editors and word processors for "Find and Replace" operations.
+  2. Search engines and command-line search tools (like grep).
+  3. Sequence search and alignment in bioinformatics (DNA sequencing).
+
+--------------------------------------------------------------------------------
+P7: FLOYD-WARSHALL ALGORITHM
+--------------------------------------------------------------------------------
+* Design Technique: Dynamic Programming
+* Purpose         : To find the shortest paths between all pairs of vertices in a 
+                    weighted graph (handles positive and negative weights, but no negative cycles).
+* Time Complexity : 
+  - Best Case   : O(V^3) (always processes the three nested loops of size V)
+  - Average Case: O(V^3)
+  - Worst Case  : O(V^3)
+* Space Complexity: 
+  - Auxiliary Space: O(1) (updates the distance matrix in-place)
+  - Total Space    : O(V^2) for the V x V distance matrix
+* Applications    : 
+  1. Finding the transitive closure of a relation (Warshall's algorithm).
+  2. Routing tables calculation in peer-to-peer networks.
+  3. Finding the diameter of a network/graph.
+
+--------------------------------------------------------------------------------
+P8: 0/1 KNAPSACK PROBLEM
+--------------------------------------------------------------------------------
+* Design Technique: Dynamic Programming
+* Purpose         : To select a subset of items, each with a given weight and profit, 
+                    to maximize the total profit without exceeding a maximum capacity.
+* Time Complexity : 
+  - Best Case   : O(n * W) (where n is the number of items and W is the capacity)
+  - Average Case: O(n * W)
+  - Worst Case  : O(n * W) (always computes the DP table of size (n+1) x (W+1))
+* Space Complexity: 
+  - Auxiliary Space: O(n * W) to store the DP table
+  - Total Space    : O(n * W) to store the DP table and the weights/profits arrays
+* Applications    : 
+  1. Resource allocation under budget and space constraints.
+  2. Financial portfolio optimization (investing in discrete projects for max return).
+  3. Cargo and passenger luggage weight loading on aircraft or cargo ships.
+
+--------------------------------------------------------------------------------
+P9: BELLMAN-FORD ALGORITHM
+--------------------------------------------------------------------------------
+* Design Technique: Dynamic Programming
+* Purpose         : To find the shortest paths from a single source vertex to all 
+                    other vertices in a weighted graph, even in the presence of 
+                    negative edge weights and detecting negative weight cycles.
+* Time Complexity : 
+  - Best Case   : O(V * E) (always executes the nested V iterations over all E edges)
+  - Average Case: O(V * E)
+  - Worst Case  : O(V * E)
+* Space Complexity: 
+  - Auxiliary Space: O(V) for the distance array
+  - Total Space    : O(V + E) to store the edge list and distance array
+* Applications    : 
+  1. Distance-vector routing protocols such as RIP (Routing Information Protocol).
+  2. Finding negative arbitrage loops in financial market exchanges.
+  3. Pathfinding in graphs containing negative weights.
+
+--------------------------------------------------------------------------------
+P10: N-QUEENS PROBLEM
+--------------------------------------------------------------------------------
+* Design Technique: Backtracking
+* Purpose         : To place N chess queens on an N x N chessboard such that no 
+                    two queens threaten each other.
+* Time Complexity : 
+  - Best Case   : O(N!) (since the code counts/prints all solutions, it must search the entire state space of placing N queens on an N x N board)
+  - Average Case: O(N!)
+  - Worst Case  : O(N!)
+* Space Complexity: 
+  - Auxiliary Space: O(N) for recursion stack and board array
+  - Total Space    : O(N) total space
+* Applications    : 
+  1. Constraint satisfaction problems and backtracking solvers.
+  2. Parallel processing load balancing.
+  3. VLSI chip testing and register allocation.
+
+--------------------------------------------------------------------------------
+P11: SUBSET SUM PROBLEM
+--------------------------------------------------------------------------------
+* Design Technique: Backtracking
+* Purpose         : To find all subsets of a given set of positive integers that 
+                    sum up to a target value.
+* Time Complexity : 
+  - Best Case   : O(2^n) (since we need to find all subsets that match the target sum, we explore the subset tree)
+  - Average Case: O(2^n)
+  - Worst Case  : O(2^n)
+* Space Complexity: 
+  - Auxiliary Space: O(n) representing the maximum recursion depth
+  - Total Space    : O(n) to store the elements array
+* Applications    : 
+  1. Cryptographic systems (like Knapsack cryptosystems).
+  2. Resource distribution and budget planning.
+  3. Hard partitioning and bin packing tasks.
+
+--------------------------------------------------------------------------------
+P12: TRAVELLING SALESPERSON PROBLEM (TSP)
+--------------------------------------------------------------------------------
+* Design Technique: Branch and Bound
+* Purpose         : To find the minimum cost cycle tour that visits all vertices/cities 
+                    exactly once and returns to the starting city, pruning invalid branches.
+* Time Complexity : 
+  - Best Case   : O(n!) (although pruning improves practical execution time, theoretically it remains O(n!))
+  - Average Case: O(n!)
+  - Worst Case  : O(n!) (when pruning is not effective, exploring all (n-1)! permutations of vertices takes O(n!))
+* Space Complexity: 
+  - Auxiliary Space: O(n) for the recursion stack and state arrays (visited, path, bestPath)
+  - Total Space    : O(n^2) to store the cost matrix of size n x n
+* Applications    : 
+  1. Logistics, package deliveries, and vehicle routing.
+  2. CNC drilling and microchip manufacturing path optimization.
+  3. DNA sequencing and scheduling jobs on machines.
+================================================================================

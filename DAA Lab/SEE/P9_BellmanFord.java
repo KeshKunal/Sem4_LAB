@@ -35,7 +35,7 @@ public class P9_BellmanFord {
         Arrays.fill(dist, Integer.MAX_VALUE);
         dist[src] = 0;
 
-        for(int i=1; i<=V; i++){
+        for(int i=1; i<V; i++){
             for(int[] edge : edges){
                 int u = edge[0];
                 int v = edge[1];
@@ -80,3 +80,15 @@ public class P9_BellmanFord {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(V * E) (always executes the nested V iterations over all E edges)
+  - Average Case: O(V * E)
+  - Worst Case:   O(V * E)
+Space Complexity:
+  - Auxiliary Space: O(V) for the distance array
+  - Total Space:     O(V + E) to store the edge list and distance array
+*/

@@ -45,7 +45,7 @@ class P5_Prims {
         }
 
         boolean[] inMST = new boolean[n];
-        inMST[0] = true; // Start from vertex 0
+        inMST[0] = true;
 
         int edgesCount = 0;
         int totalCost = 0;
@@ -92,3 +92,15 @@ class P5_Prims {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(n^3) (due to iterating over all pairs of vertices in the nested loops for each of the n-1 edge selections)
+  - Average Case: O(n^3)
+  - Worst Case:   O(n^3)
+Space Complexity:
+  - Auxiliary Space: O(n) for the inMST tracking array
+  - Total Space:     O(n^2) to store the adjacency matrix of size n x n
+*/

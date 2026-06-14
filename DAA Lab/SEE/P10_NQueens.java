@@ -87,3 +87,15 @@ class P10_NQueens {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(N!) (since the code counts/prints all solutions, it must search the entire state space of placing N queens on an N x N board)
+  - Average Case: O(N!)
+  - Worst Case:   O(N!)
+Space Complexity:
+  - Auxiliary Space: O(N) for recursion stack and board array
+  - Total Space:     O(N) total space
+*/

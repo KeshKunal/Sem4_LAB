@@ -103,3 +103,15 @@ class P1_QuickSortHoare {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(n log n) (occurs when partitions are always balanced)
+  - Average Case: O(n log n)
+  - Worst Case:   O(n^2) (occurs when array is already sorted/reverse sorted, as first element is chosen as pivot)
+Space Complexity:
+  - Auxiliary Space: O(log n) average recursion stack; O(n) worst-case recursion stack
+  - Total Space:     O(n) to store the elements array
+*/

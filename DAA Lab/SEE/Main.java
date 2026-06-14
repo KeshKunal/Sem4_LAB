@@ -139,3 +139,15 @@ public class P {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(n^2) (always loops through all vertices to find min distance and update neighbors)
+  - Average Case: O(n^2)
+  - Worst Case:   O(n^2)
+Space Complexity:
+  - Auxiliary Space: O(n) (for dist, visited, and parent arrays)
+  - Total Space:     O(n^2) to store the adjacency matrix of size n x n
+*/

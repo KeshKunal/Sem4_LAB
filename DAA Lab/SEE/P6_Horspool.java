@@ -94,3 +94,15 @@ class P6_Horspool {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(n/m) (occurs when the pattern is not present and characters align to allow max shifts of size m)
+  - Average Case: O(n)
+  - Worst Case:   O(n * m) (occurs when text and pattern have repeating matching characters, leading to minimal shift of 1)
+Space Complexity:
+  - Auxiliary Space: O(1) (since the shift table size is constant, 256 for ASCII)
+  - Total Space:     O(n + m) to store the text and pattern strings
+*/

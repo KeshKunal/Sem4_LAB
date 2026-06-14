@@ -58,7 +58,7 @@ Space Complexity : O(n)
 
 import java.util.Scanner;
 
-public class TSP_BranchAndBound {
+public class P12_TSP_BranchAndBound {
 
     static int n;  // no. of cities 
     static int[][] cost; // cost matrix
@@ -139,3 +139,15 @@ public class TSP_BranchAndBound {
         sc.close();
     }
 }
+
+/*
+Complexity Analysis (Based on this specific implementation):
+------------------------------------------------------------
+Time Complexity:
+  - Best Case:    O(n!) (although pruning improves practical execution time, theoretically it remains O(n!))
+  - Average Case: O(n!)
+  - Worst Case:   O(n!) (when pruning is not effective, exploring all (n-1)! permutations of vertices takes O(n!))
+Space Complexity:
+  - Auxiliary Space: O(n) for the recursion stack and state arrays (visited, path, bestPath)
+  - Total Space:     O(n^2) to store the cost matrix of size n x n
+*/
